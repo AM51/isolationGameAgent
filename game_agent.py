@@ -35,7 +35,9 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
-    raise NotImplementedError
+
+    legal_moves = game.get_legal_moves(player)
+    return float(len(legal_moves))
 
 
 def custom_score_2(game, player):
@@ -155,6 +157,7 @@ class MinimaxPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
+        print("yolo2")
         # Initialize the best move so that this function returns something
         # in case the search fails due to timeout
         best_move = (-1, -1)
@@ -214,10 +217,63 @@ class MinimaxPlayer(IsolationPlayer):
 
         # TODO: finish this function!
 
+        best_move = (-1,-1)
+
+        if(depth <=0 ):
+            return best_move
+
         legal_moves = game.get_legal_moves()
+
         if not legal_moves:
-            return (-1, -1)
-        return legal_moves[0]
+            return best_move
+
+        best_score = 0
+        for move in legal_moves:
+            new_game = game.forecast_move(move)
+            new_score = self.min_decision(new_game,depth-1)
+            if(new_score > best_score):
+                best_score = new_score
+                best_move = move
+
+        return best_move
+
+    def max_decision(self,game,depth):
+
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if(depth == 0 ):
+            return self.score(game,game._player_1)
+
+        best_score = float("-inf")
+        legal_moves = game.get_legal_moves()
+
+        for move in legal_moves:
+            new_game = game.forecast_move(move)
+            new_score = self.min_decision(new_game, depth - 1)
+            if (new_score > best_score):
+                best_score = new_score
+
+        return best_score
+
+    def min_decision(self, game, depth):
+
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if (depth == 0):
+            return self.score(game, game._player_1)
+
+        best_score = float("inf")
+        legal_moves = game.get_legal_moves()
+
+        for move in legal_moves:
+            new_game = game.forecast_move(move)
+            new_score = self.max_decision(new_game, depth - 1)
+            if (new_score < best_score):
+                best_score = new_score
+
+        return best_score
 
 
 
