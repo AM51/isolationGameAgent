@@ -63,8 +63,9 @@ def custom_score_2(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
-    raise NotImplementedError
-
+    legal_moves1 = game.get_legal_moves(player)
+    legal_moves2 = game.get_legal_moves(game.get_opponent(player))
+    return float(len(legal_moves1)) - float(len(legal_moves2))
 
 def custom_score_3(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -89,8 +90,9 @@ def custom_score_3(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
-    raise NotImplementedError
-
+    legal_moves1 = game.get_legal_moves(player)
+    legal_moves2 = game.get_legal_moves(game.get_opponent(player))
+    return float(len(legal_moves1)) + float(len(legal_moves2))
 
 class IsolationPlayer:
     """Base class for minimax and alphabeta agents -- this class is never
@@ -316,8 +318,22 @@ class AlphaBetaPlayer(IsolationPlayer):
         self.time_left = time_left
 
         # TODO: finish this function!
-        return self.alphabeta(game,self.search_depth)
+        depth = 1
+        legal_moves = game.get_legal_moves()
+        if(not legal_moves):
+            return (-1,-1)
 
+        move = legal_moves[0]
+
+        while (self.time_left() > self.TIMER_THRESHOLD):
+            try:
+                move = self.alphabeta(game, depth)
+            except SearchTimeout:
+                return move
+            else:
+                depth = depth + 1
+
+        return move
 
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
