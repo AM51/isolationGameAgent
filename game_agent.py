@@ -9,7 +9,7 @@ class SearchTimeout(Exception):
     """Subclass base exception for code clarity. """
     pass
 
-
+dict =  {}
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
@@ -36,8 +36,8 @@ def custom_score(game, player):
     """
     # TODO: finish this function!
 
-    legal_moves = game.get_legal_moves(player)
-    return float(len(legal_moves))
+    legal_moves = game.get_blank_spaces()
+    return  float(len(legal_moves))
 
 
 def custom_score_2(game, player):
@@ -63,9 +63,15 @@ def custom_score_2(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
+
+    hs = game.hash()
+    if(hs in dict.keys()):
+        return dict.get(hs)
+
     legal_moves1 = game.get_legal_moves(player)
     legal_moves2 = game.get_legal_moves(game.get_opponent(player))
-    return float(len(legal_moves1)) - float(len(legal_moves2))
+    dict[hs] = float(len(legal_moves1)) - float(len(legal_moves2))
+    return dict[hs]
 
 def custom_score_3(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -159,10 +165,12 @@ class MinimaxPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        print("yolo2")
         # Initialize the best move so that this function returns something
         # in case the search fails due to timeout
         best_move = (-1, -1)
+
+        if(game.move_count == 0):
+            return (int(game.width/2),int(game.height/2))
 
         try:
             # The try/except block will automatically catch the exception
@@ -318,10 +326,16 @@ class AlphaBetaPlayer(IsolationPlayer):
         self.time_left = time_left
 
         # TODO: finish this function!
+
+
+
         depth = 1
         legal_moves = game.get_legal_moves()
         if(not legal_moves):
             return (-1,-1)
+
+        if(game.move_count == 0 and game.width%2 == 1):
+            return (int(game.width/2),int(game.height/2))
 
         move = legal_moves[0]
 
